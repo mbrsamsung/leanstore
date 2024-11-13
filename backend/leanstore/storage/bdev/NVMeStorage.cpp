@@ -34,6 +34,7 @@ int setup_xnvme(char* dev_uri)
     return 0;
 }
 
+
 int cleanup(struct xnvme_dev* dev, char* buf, xnvme_queue* queue)
 {
     int ret;

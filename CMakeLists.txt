@@ -50,7 +50,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 include("${CMAKE_SOURCE_DIR}/libs/gflags.cmake")
 include("${CMAKE_SOURCE_DIR}/libs/tabluate.cmake")
 include("${CMAKE_SOURCE_DIR}/libs/rapidjson.cmake")
-include("${CMAKE_SOURCE_DIR}/libs/xnvme.cmake")
+#include("${CMAKE_SOURCE_DIR}/libs/xnvme.cmake")
 #include("${CMAKE_SOURCE_DIR}/libs/rocksdb.cmake")
 #include("${CMAKE_SOURCE_DIR}/libs/googletest.cmake")
 #include("${CMAKE_SOURCE_DIR}/libs/benchmark.cmake")
@@ -61,7 +61,7 @@ include("${CMAKE_SOURCE_DIR}/libs/xnvme.cmake")
 #include("${CMAKE_SOURCE_DIR}/libs/psql.cmake")
 #include("${CMAKE_SOURCE_DIR}/libs/gdouble.cmake")
 #include("${CMAKE_SOURCE_DIR}/libs/turbo.cmake")
-#nclude("${CMAKE_SOURCE_DIR}/libs/lz4.cmake")
+#include("${CMAKE_SOURCE_DIR}/libs/lz4.cmake")
 
 # ---------------------------------------------------------------------------
 # Includes

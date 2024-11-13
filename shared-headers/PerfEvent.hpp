@@ -94,16 +94,16 @@ struct PerfEvent {
     registerCounter("br-miss", PERF_TYPE_HARDWARE, PERF_COUNT_HW_BRANCH_MISSES);
     registerCounter("task", PERF_TYPE_SOFTWARE, PERF_COUNT_SW_TASK_CLOCK);
     // additional counters can be found in linux/perf_event.h
-
     for (unsigned i = 0; i < events.size(); i++) {
-      auto& event = events[i];
-      event.fd = syscall(__NR_perf_event_open, &event.pe, 0, -1, -1, 0);
-      if (event.fd < 0) {
-        std::cerr << "Error opening counter " << names[i] << std::endl;
-        events.resize(0);
-        names.resize(0);
-        return;
-      }
+       auto& event = events[i];
+       std::cout << "EVENTS: " << &event << std::endl;
+       event.fd = syscall(__NR_perf_event_open, &event.pe, 0, -1, -1, 0);
+       if (event.fd < 0) {
+          std::cerr << "Error opening counter " << names[i] << " - error code: " << event.fd << std::endl;
+          events.resize(0);
+          names.resize(0);
+          return;
+       }
     }
   }
 
