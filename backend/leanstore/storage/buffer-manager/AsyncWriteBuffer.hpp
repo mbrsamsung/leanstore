@@ -1,6 +1,7 @@
 #pragma once
 #include "BufferFrame.hpp"
 #include "Units.hpp"
+#include "leanstore/storage/bdev/NVMeStorage.hpp"
 // -------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------
 #include <libaio.h>
@@ -19,7 +20,7 @@ class AsyncWriteBuffer
       PID pid;
    };
    io_context_t aio_context;
-   int fd;
+   leanstore::storage::bdev::NVMeStorage* storage;
    u64 page_size, batch_max_size;
    u64 pending_requests = 0;
 
@@ -32,7 +33,7 @@ class AsyncWriteBuffer
    // -------------------------------------------------------------------------------------
    // Debug
    // -------------------------------------------------------------------------------------
-   AsyncWriteBuffer(int fd, u64 page_size, u64 batch_max_size);
+   AsyncWriteBuffer(leanstore::storage::bdev::NVMeStorage* storage, u64 page_size, u64 batch_max_size);
    // Caller takes care of sync
    bool full();
    void add(BufferFrame& bf, PID pid);

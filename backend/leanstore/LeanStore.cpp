@@ -61,25 +61,22 @@ LeanStore::LeanStore()
    if (FLAGS_trunc) {
       flags |= O_TRUNC | O_CREAT;
    }
-   ssd_fd = open(FLAGS_ssd_path.c_str(), flags, 0666);
-   if (ssd_fd == -1) {
-      perror("posix error");
-      std::cout << "path: " << FLAGS_ssd_path << std::endl;
-      SetupFailed("Could not open the file or the SSD block device");
-   }
+   
+   leanstore::storage::bdev::NVMeStorage* storage_store = new leanstore::storage::bdev::NVMeStorage(FLAGS_ssd_path.c_str());
+
    if (FLAGS_falloc > 0) {
+      std::cout << "We are in the looop" << std::endl;
       const u64 gib_size = 1024ull * 1024ull * 1024ull;
-      auto dummy_data = (u8*)aligned_alloc(512, gib_size);
+
+      auto dummy_data = storage_store->nvme_random_buffer(gib_size);
       for (u64 i = 0; i < FLAGS_falloc; i++) {
-         const int ret = pwrite(ssd_fd, dummy_data, gib_size, gib_size * i);
+         const int ret = storage_store->nvme_write(dummy_data, gib_size, gib_size * i);
          posix_check(ret == gib_size);
       }
       free(dummy_data);
-      fsync(ssd_fd);
    }
-   ensure(fcntl(ssd_fd, F_GETFL) != -1);
    // -------------------------------------------------------------------------------------
-   buffer_manager = make_unique<storage::BufferManager>(ssd_fd);
+   buffer_manager = make_unique<storage::BufferManager>(storage_store);
    BMC::global_bf = buffer_manager.get();
    // -------------------------------------------------------------------------------------
    DTRegistry::global_dt_registry.registerDatastructureType(0, storage::btree::BTreeLL::getMeta());

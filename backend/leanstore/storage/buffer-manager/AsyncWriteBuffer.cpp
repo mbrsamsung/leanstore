@@ -17,7 +17,7 @@ namespace leanstore
 namespace storage
 {
 // -------------------------------------------------------------------------------------
-AsyncWriteBuffer::AsyncWriteBuffer(int fd, u64 page_size, u64 batch_max_size) : fd(fd), page_size(page_size), batch_max_size(batch_max_size)
+AsyncWriteBuffer::AsyncWriteBuffer(leanstore::storage::bdev::NVMeStorage* storage, u64 page_size, u64 batch_max_size) : storage(storage), page_size(page_size), batch_max_size(batch_max_size)
 {
    write_buffer = make_unique<BufferFrame::Page[]>(batch_max_size);
    write_buffer_commands = make_unique<WriteCommand[]>(batch_max_size);
@@ -66,7 +66,8 @@ void AsyncWriteBuffer::add(BufferFrame& bf, PID pid)
    bf.page.magic_debugging_number = pid;
    std::memcpy(&write_buffer[slot], bf.page, page_size);
    void* write_buffer_slot_ptr = &write_buffer[slot];
-   io_prep_pwrite(&iocbs[slot], fd, write_buffer_slot_ptr, page_size, page_size * pid);
+   //TODO: Check if this is necessary
+   //io_prep_pwrite(&iocbs[slot], fd, write_buffer_slot_ptr, page_size, page_size * pid);
    iocbs[slot].data = write_buffer_slot_ptr;
    iocbs_ptr[slot] = &iocbs[slot];
 }

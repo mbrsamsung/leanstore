@@ -26,7 +26,7 @@ namespace storage
 // -------------------------------------------------------------------------------------
 thread_local BufferFrame* BufferManager::last_read_bf = nullptr;
 // -------------------------------------------------------------------------------------
-BufferManager::BufferManager(s32 ssd_fd) : ssd_fd(ssd_fd)
+BufferManager::BufferManager(leanstore::storage::bdev::NVMeStorage* storage) : storage(storage)
 {
    // -------------------------------------------------------------------------------------
    // Init DRAM pool
@@ -131,7 +131,8 @@ void BufferManager::writeAllBufferFrames()
             page.dt_id = bf.page.dt_id;
             page.magic_debugging_number = bf.header.pid;
             DTRegistry::global_dt_registry.checkpoint(bf.page.dt_id, bf, page.dt);
-            s64 ret = pwrite(ssd_fd, page, PAGE_SIZE, bf.header.pid * PAGE_SIZE);
+            //s64 ret = pwrite(ssd_fd, page, PAGE_SIZE, bf.header.pid * PAGE_SIZE);
+            s64 ret = storage->nvme_write(page, PAGE_SIZE,  bf.header.pid * PAGE_SIZE);
             ensure(ret == PAGE_SIZE);
          }
          bf.header.latch.mutex.unlock();
@@ -428,7 +429,8 @@ void BufferManager::readPageSync(u64 pid, u8* destination)
    paranoid(u64(destination) % 512 == 0);
    s64 bytes_left = PAGE_SIZE;
    do {
-      const int bytes_read = pread(ssd_fd, destination, bytes_left, pid * PAGE_SIZE + (PAGE_SIZE - bytes_left));
+      //const int bytes_read = pread(ssd_fd, destination, bytes_left, pid * PAGE_SIZE + (PAGE_SIZE - bytes_left));
+      const int bytes_read = storage->nvme_read(destination, bytes_left, pid * PAGE_SIZE + (PAGE_SIZE - bytes_left));
       assert(bytes_read > 0);  // call was successfull?
       bytes_left -= bytes_read;
    } while (bytes_left > 0);
@@ -438,7 +440,8 @@ void BufferManager::readPageSync(u64 pid, u8* destination)
 // -------------------------------------------------------------------------------------
 void BufferManager::fDataSync()
 {
-   fdatasync(ssd_fd);
+   // TODO: Fix this!
+   //fdatasync(ssd_fd);
 }
 // -------------------------------------------------------------------------------------
 u64 BufferManager::getPartitionID(PID pid)

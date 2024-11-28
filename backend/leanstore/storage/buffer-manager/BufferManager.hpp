@@ -5,6 +5,8 @@
 #include "Partition.hpp"
 #include "Swip.hpp"
 #include "Units.hpp"
+#include "leanstore/storage/bdev/NVMeStorage.hpp"
+
 // -------------------------------------------------------------------------------------
 #include "PerfEvent.hpp"
 // -------------------------------------------------------------------------------------
@@ -65,10 +67,12 @@ class BufferManager
   private:
    friend class leanstore::LeanStore;
    friend class leanstore::profiling::BMTable;
+   
    // -------------------------------------------------------------------------------------
    BufferFrame* bfs;
    // -------------------------------------------------------------------------------------
-   const int ssd_fd;
+   //const int ssd_fd;
+   leanstore::storage::bdev::NVMeStorage* storage;
    // -------------------------------------------------------------------------------------
    // Free  Pages
    const u8 safety_pages = 10;               // we reserve these extra pages to prevent segfaults
@@ -98,7 +102,7 @@ class BufferManager
 
   public:
    // -------------------------------------------------------------------------------------
-   BufferManager(s32 ssd_fd);
+   BufferManager(leanstore::storage::bdev::NVMeStorage* storage);
    ~BufferManager();
    // -------------------------------------------------------------------------------------
    BufferFrame& allocatePage();

@@ -6,6 +6,7 @@
 #include "leanstore/storage/btree/BTreeVI.hpp"
 #include "leanstore/storage/buffer-manager/BufferManager.hpp"
 #include "rapidjson/document.h"
+#include "leanstore/storage/bdev/NVMeStorage.hpp"
 // -------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------
 #include <unordered_map>
