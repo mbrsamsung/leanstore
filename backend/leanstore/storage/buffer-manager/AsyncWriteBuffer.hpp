@@ -19,7 +19,8 @@ class AsyncWriteBuffer
       BufferFrame* bf;
       PID pid;
    };
-   io_context_t aio_context;
+   //io_context_t aio_context;
+   xnvme_cmd_ctx aio_context;
    leanstore::storage::bdev::NVMeStorage* storage;
    u64 page_size, batch_max_size;
    u64 pending_requests = 0;
@@ -27,9 +28,9 @@ class AsyncWriteBuffer
   public:
    std::unique_ptr<BufferFrame::Page[]> write_buffer;
    std::unique_ptr<WriteCommand[]> write_buffer_commands;
-   std::unique_ptr<struct iocb[]> iocbs;
-   std::unique_ptr<struct iocb*[]> iocbs_ptr;
-   std::unique_ptr<struct io_event[]> events;
+   //std::unique_ptr<struct iocb[]> iocbs;
+   //std::unique_ptr<struct iocb*[]> iocbs_ptr;
+   //std::unique_ptr<struct io_event[]> events;
    // -------------------------------------------------------------------------------------
    // Debug
    // -------------------------------------------------------------------------------------
