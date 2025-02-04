@@ -5,6 +5,7 @@
 // -------------------------------------------------------------------------------------
 // -------------------------------------------------------------------------------------
 #include <libaio.h>
+#include <libxnvme.h>
 #include <functional>
 // -------------------------------------------------------------------------------------
 namespace leanstore
@@ -19,11 +20,26 @@ class AsyncWriteBuffer
       BufferFrame* bf;
       PID pid;
    };
+
+   // NVMe device and queue
+   struct xnvme_dev* dev = nullptr;
+   struct xnvme_queue* queue = nullptr;
+
+   // Aligned write buffer
+   //BufferFrame::Page* write_buffer = nullptr;
+
+   // Commands and metadata
+   //std::unique_ptr<WriteCommand[]> write_buffer_commands;
+
+   // Configuration
+   uint64_t page_size;
+   uint64_t batch_max_size;
+
+   // State
+   uint64_t pending_requests = 0;
    //io_context_t aio_context;
-   xnvme_cmd_ctx aio_context;
+   xnvme_cmd_ctx ctx;
    leanstore::storage::bdev::NVMeStorage* storage;
-   u64 page_size, batch_max_size;
-   u64 pending_requests = 0;
 
   public:
    std::unique_ptr<BufferFrame::Page[]> write_buffer;
@@ -34,7 +50,9 @@ class AsyncWriteBuffer
    // -------------------------------------------------------------------------------------
    // Debug
    // -------------------------------------------------------------------------------------
-   AsyncWriteBuffer(leanstore::storage::bdev::NVMeStorage* storage, u64 page_size, u64 batch_max_size);
+   // AsyncWriteBuffer(leanstore::storage::bdev::NVMeStorage* storage, u64 page_size, u64 batch_max_size);
+   AsyncWriteBuffer(const char* device_path, u64 page_size, u64 batch_max_size);
+   ~AsyncWriteBuffer();
    // Caller takes care of sync
    bool full();
    void add(BufferFrame& bf, PID pid);
